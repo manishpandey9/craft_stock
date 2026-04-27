@@ -1,0 +1,48 @@
+# === ROOT LEVEL GITIGNORE FOR CRAFTSTOCK ===
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.env.local
+backend/*.log
+
+# Frontend (Next.js + Node)
+frontend/.next/
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env.local
+frontend/.env*.local
+frontend/*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build / Dist
+dist/
+build/
+*.min.js
+*.map
+
+# Logs
+logs/
+*.log
+
+# Environment (global)
+.env
+.env.production
+.env.staging
+
+# Local development files
+*.tmp
+*.temp
+uploads/
+exports/
