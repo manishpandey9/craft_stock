@@ -1,9 +1,11 @@
 # === ROOT LEVEL GITIGNORE FOR CRAFTSTOCK ===
 
-# Backend
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
 backend/venv/
-backend/__pycache__/
-backend/*.pyc
 backend/.env
 backend/.env.local
 backend/*.log
