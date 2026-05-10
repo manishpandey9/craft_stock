@@ -15,6 +15,7 @@ export interface Component {
   supplier: string | null;
   lead_time_days: number | null;
   notes: string | null;
+  cost_per_unit: number;
   is_active: boolean;
   created_at: string;
   updated_at: string | null;
@@ -44,6 +45,32 @@ export async function createComponent(data: Partial<Component>): Promise<Compone
   }
   
   return response.json();
+}
+
+export async function updateComponent(id: number, data: Partial<Component>): Promise<Component> {
+  const response = await fetch(`${API_URL}/api/v1/components/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update component');
+  }
+  
+  return response.json();
+}
+
+export async function deleteComponent(id: number): Promise<void> {
+  const response = await fetch(`${API_URL}/api/v1/components/${id}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to delete component');
+  }
 }
 
 // src/lib/api.ts - Add at end
@@ -191,3 +218,9 @@ export async function importComponents(file: File): Promise<CSVImportResult> {
   return response.json();
 }
 
+
+export async function fetchBOMCount(): Promise<{ count: number }> {
+  const response = await fetch(`${API_URL}/api/v1/boms/count`);
+  if (!response.ok) throw new Error('Failed to fetch BOM count');
+  return response.json();
+}

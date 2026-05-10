@@ -32,19 +32,20 @@ export default function RiskDashboard() {
   const [stats, setStats] = useState({ safe: 0, at_risk: 0, out_of_stock: 0 });
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/risk/overview`)
+    const API_URL = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000').replace('localhost', '127.0.0.1');
+    fetch(`${API_URL}/api/v1/risk/overview`)
       .then(res => res.json())
       .then(data => {
-        setProducts(data.products);
+        setProducts(data.products || []);
         const stats = { safe: 0, at_risk: 0, out_of_stock: 0 };
-        data.products.forEach((p: RiskProduct) => {
+        (data.products || []).forEach((p: RiskProduct) => {
           stats[p.status]++;
         });
         setStats(stats);
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error("Failed to fetch risk data", err);
         setLoading(false);
       });
   }, []);

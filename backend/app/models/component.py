@@ -29,6 +29,7 @@ class Component(Base):
     on_hand = Column(Float, nullable=False, default=0.0)  # Physical quantity
     reserved = Column(Float, nullable=False, default=0.0)  # Reserved for orders
     available = Column(Float, nullable=False, default=0.0)  # on_hand - reserved
+    cost_per_unit = Column(Float, nullable=False, default=0.0)  # Cost price for valuation
     
     # Inventory management
     threshold = Column(Float, nullable=False, default=0.0)  # Low stock threshold
