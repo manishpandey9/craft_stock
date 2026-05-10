@@ -12,7 +12,6 @@ from app.routes import csv
 from app.routes import risk
 from app.routes import webhooks
 
-
 # Logging setup
 logging.basicConfig(
     level=logging.INFO,
@@ -54,7 +53,7 @@ app.add_middleware(
         settings.SHOPIFY_APP_URL.rstrip("/") if settings.SHOPIFY_APP_URL else "",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
 )

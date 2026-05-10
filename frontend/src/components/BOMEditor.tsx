@@ -160,7 +160,7 @@ export default function BOMEditor({ variantId, variantName, open, onClose, onSuc
         </div>
 
         {/* Body */}
-        <div className="p-lg overflow-y-auto flex-1 flex flex-col gap-lg">
+        <div className="p-lg overflow-y-auto flex-1 flex { flex-col gap-lg }">
           {error && (
             <div className="p-md bg-error-container text-on-error-container rounded-xl flex items-center gap-sm">
               <span className="material-symbols-outlined">error</span>

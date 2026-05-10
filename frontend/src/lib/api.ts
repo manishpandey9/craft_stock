@@ -73,8 +73,6 @@ export async function deleteComponent(id: number): Promise<void> {
   }
 }
 
-// src/lib/api.ts - Add at end
-
 export async function calculateTotalCapacity(): Promise<number> {
   // For MVP: Simple logic - min of all component-supported units
   // In production: Query all active BOMs + calculate per variant
@@ -96,8 +94,6 @@ export async function calculateTotalCapacity(): Promise<number> {
   
   return minCapacity === Infinity ? 0 : minCapacity;
 }
-
-// src/lib/api.ts - Add at end
 
 export interface Alert {
   id: number;
@@ -131,8 +127,6 @@ export async function markAlertRead(alertId: number): Promise<Alert> {
   return response.json();
 }
 
-// src/lib/api.ts - Add at end
-
 export interface MerchantSettings {
   merchant_id: string;
   default_threshold: number;
@@ -163,8 +157,6 @@ export async function updateSettings( updates: Partial<MerchantSettings>): Promi
   if (!response.ok) throw new Error('Failed to update settings');
   return response.json();
 }
-
-// src/lib/api.ts - Add at end
 
 export interface CSVImportResult {
   success: boolean;
@@ -217,7 +209,6 @@ export async function importComponents(file: File): Promise<CSVImportResult> {
   
   return response.json();
 }
-
 
 export async function fetchBOMCount(): Promise<{ count: number }> {
   const response = await fetch(`${API_URL}/api/v1/boms/count`);

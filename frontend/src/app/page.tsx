@@ -316,8 +316,6 @@ export default function Dashboard() {
         </>
       )}
 
-
-
       <CreateComponentModal 
         open={modalOpen} 
         onClose={() => { setModalOpen(false); setComponentToEdit(null); }} 
