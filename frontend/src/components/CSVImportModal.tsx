@@ -2,18 +2,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import {
-  Modal,
-  BlockStack,
-  Text,
-  Button,
-  Banner,
-  Spinner,
-  InlineGrid,
-  Box,
-  Icon,
-} from "@shopify/polaris";
-import { FileIcon, ArrowDownIcon, AlertCircleIcon } from "@shopify/polaris-icons";
 import { downloadComponentTemplate, importComponents, type CSVImportResult } from "@/lib/api";
 
 interface Props {
@@ -70,129 +58,157 @@ export default function CSVImportModal({ open, onClose, onSuccess }: Props) {
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title="Import Components from CSV / Excel"
-      primaryAction={{
-        content: "Import",
-        onAction: handleUpload,
-        loading: uploading,
-        disabled: !file || uploading,
-      }}
-      secondaryActions={[
-        {
-          content: "Download Template",
-          onAction: handleDownloadTemplate,
-          icon: ArrowDownIcon,
-        },
-      ]}
-    >
-      <Modal.Section>
-        <BlockStack gap="400">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-variant/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-surface rounded-2xl shadow-2xl max-w-[42rem] w-full border border-outline-variant overflow-hidden flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
+        <div className="p-lg border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+          <h3 className="font-h3 text-h3 text-on-surface">Import Components</h3>
+          <button 
+            onClick={onClose} 
+            className="text-on-surface-variant hover:bg-surface-variant/50 p-1 rounded-lg transition-colors"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-lg overflow-y-auto flex-1 flex flex-col gap-lg">
+          
+          <div className="flex justify-end mb-sm">
+            <button 
+              onClick={handleDownloadTemplate}
+              className="flex items-center gap-xs px-md py-sm bg-surface-container text-primary border border-outline-variant rounded-xl font-button hover:bg-surface-container-high transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">download</span>
+              Download Template
+            </button>
+          </div>
+
           {error && (
-            <Banner tone="critical" onDismiss={() => setError(null)}>
-              {error}
-            </Banner>
+            <div className="p-md bg-error-container text-on-error-container rounded-xl flex items-center gap-sm">
+              <span className="material-symbols-outlined text-error">error</span>
+              <p className="font-body-md flex-1">{error}</p>
+              <button onClick={() => setError(null)}>
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
           )}
 
           {result?.success && (
-            <Banner tone="success">
-              <BlockStack gap="100">
-                <Text as="h3" variant="bodyMd" fontWeight="bold">
-                  ✅ Imported {result.imported_count} components
-                </Text>
-                {result.error_count > 0 && (
-                  <Text as="p" variant="bodySm">
-                    ⚠️ {result.error_count} rows had errors (see below)
-                  </Text>
-                )}
-              </BlockStack>
-            </Banner>
+            <div className="p-md bg-primary-container/30 border border-primary-container text-on-surface rounded-xl flex flex-col gap-xs">
+              <p className="font-h3 text-h3 text-primary flex items-center gap-xs">
+                <span className="material-symbols-outlined">check_circle</span>
+                Imported {result.imported_count} components
+              </p>
+              {result.error_count > 0 && (
+                <p className="font-body-sm text-error flex items-center gap-xs mt-xs">
+                  <span className="material-symbols-outlined text-sm">warning</span>
+                  {result.error_count} rows had errors (see below)
+                </p>
+              )}
+            </div>
           )}
 
-          {/* File Upload */}
-          <Box
-            padding="400"
-            borderWidth="025"
-            borderRadius="100"
-            borderColor="border"
-            background="bg-surface-secondary"
-          >
-            <InlineGrid columns="1fr auto" gap="300" alignItems="center">
-              <BlockStack gap="100">
-                <Text as="p" variant="bodyMd" fontWeight="bold">
-                  {file ? file.name : "No file selected"}
-                </Text>
-                <Text as="p" variant="bodySm" tone="subdued">
-                  CSV or Excel file with columns: name, sku, component_type, unit, on_hand, threshold...
-                </Text>
-              </BlockStack>
-              <div>
-                <input
-                  type="file"
-                  accept=".csv,.xlsx"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                  ref={fileInputRef}
-                />
-                <Button icon={FileIcon} onClick={() => fileInputRef.current?.click()}>Choose File</Button>
+          {/* File Upload Box */}
+          <div className="border border-outline-variant bg-surface-container-lowest rounded-xl p-lg flex items-center justify-between gap-md">
+            <div className="flex items-center gap-md">
+              <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+                <span className="material-symbols-outlined">description</span>
               </div>
-            </InlineGrid>
-          </Box>
+              <div className="flex flex-col">
+                <p className="font-body-lg font-bold text-on-surface">
+                  {file ? file.name : "No file selected"}
+                </p>
+                <p className="font-body-sm text-on-surface-variant">
+                  CSV or Excel file with columns: name, sku, component_type, unit, on_hand, threshold...
+                </p>
+              </div>
+            </div>
+            <div>
+              <input
+                type="file"
+                accept=".csv,.xlsx"
+                onChange={handleFileChange}
+                className="hidden"
+                ref={fileInputRef}
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="px-md py-sm bg-surface-container-high border border-outline text-on-surface rounded-xl font-button hover:bg-surface-variant transition-colors whitespace-nowrap"
+              >
+                Choose File
+              </button>
+            </div>
+          </div>
 
           {/* Import Results */}
           {result?.errors && result.errors.length > 0 && (
-            <BlockStack gap="200">
-              <Text as="h3" variant="headingSm" tone="critical">Errors:</Text>
-              <Box borderWidth="025" borderRadius="100">
-                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+            <div className="flex flex-col gap-sm">
+              <h4 className="font-h3 text-error">Errors:</h4>
+              <div className="border border-error-container rounded-xl overflow-hidden bg-surface-container-lowest">
+                <div className="max-h-[200px] overflow-y-auto">
                   {result.errors.slice(0, 5).map((err, idx) => (
-                    <Box
-                      key={idx}
-                      padding="200"
-                      borderBlockEndWidth="025"
-                      borderColor="border"
-                    >
-                      <InlineGrid columns="80px 1fr" gap="200">
-                        <Text as="span" variant="bodySm" tone="subdued">Row {err.row}:</Text>
-                        <Text as="span" variant="bodySm" tone="critical">{err.error}</Text>
-                      </InlineGrid>
-                    </Box>
+                    <div key={idx} className="p-md border-b border-outline-variant flex gap-md">
+                      <span className="font-body-sm text-on-surface-variant whitespace-nowrap">Row {err.row}:</span>
+                      <span className="font-body-sm text-error">{err.error}</span>
+                    </div>
                   ))}
                   {result.errors.length > 5 && (
-                    <Box padding="200">
-                      <Text as="p" variant="bodySm" tone="subdued">
+                    <div className="p-md text-center bg-surface-container-low">
+                      <span className="font-body-sm text-on-surface-variant">
                         + {result.errors.length - 5} more errors...
-                      </Text>
-                    </Box>
+                      </span>
+                    </div>
                   )}
                 </div>
-              </Box>
-            </BlockStack>
+              </div>
+            </div>
           )}
 
           {/* Instructions */}
-          <BlockStack gap="200">
-            <Text as="h3" variant="headingSm">Instructions:</Text>
-            <BlockStack gap="050">
-              <InlineGrid columns="24px 1fr" gap="100">
-                <Icon source={AlertCircleIcon} tone="base" />
-                <Text as="p" variant="bodySm">Download the template CSV first</Text>
-              </InlineGrid>
-              <InlineGrid columns="24px 1fr" gap="100">
-                <Icon source={AlertCircleIcon} tone="base" />
-                <Text as="p" variant="bodySm">Fill in your component data (keep headers)</Text>
-              </InlineGrid>
-              <InlineGrid columns="24px 1fr" gap="100">
-                <Icon source={AlertCircleIcon} tone="base" />
-                <Text as="p" variant="bodySm">Upload the file and review results</Text>
-              </InlineGrid>
-            </BlockStack>
-          </BlockStack>
-        </BlockStack>
-      </Modal.Section>
-    </Modal>
+          <div className="flex flex-col gap-sm mt-md bg-surface-container p-md rounded-xl">
+            <h4 className="font-h3 text-on-surface">Instructions:</h4>
+            <ul className="flex flex-col gap-sm">
+              <li className="flex items-center gap-sm text-on-surface-variant font-body-md">
+                <span className="material-symbols-outlined text-primary text-sm">info</span>
+                Download the template CSV first
+              </li>
+              <li className="flex items-center gap-sm text-on-surface-variant font-body-md">
+                <span className="material-symbols-outlined text-primary text-sm">info</span>
+                Fill in your component data (keep headers)
+              </li>
+              <li className="flex items-center gap-sm text-on-surface-variant font-body-md">
+                <span className="material-symbols-outlined text-primary text-sm">info</span>
+                Upload the file and review results
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-md border-t border-outline-variant bg-surface-container-low flex justify-end gap-sm">
+          <button 
+            onClick={onClose} 
+            className="px-md py-sm rounded-xl font-button text-on-surface-variant hover:bg-surface-container transition-colors"
+            disabled={uploading}
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleUpload}
+            className="px-lg py-sm rounded-xl font-button bg-primary text-on-primary hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-xs shadow-md"
+            disabled={!file || uploading}
+          >
+            {uploading && <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>}
+            {uploading ? "Importing..." : "Import"}
+          </button>
+        </div>
+
+      </div>
+    </div>
   );
 }

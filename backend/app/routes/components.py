@@ -53,17 +53,24 @@ def create_component(
     """Create a new component"""
     merchant_id = get_current_merchant()
     
-    db_component = Component(
-        merchant_id=merchant_id,
-        **component.model_dump(),
-        available=component.on_hand,
-        reserved=0.0
-    )
-    
-    db.add(db_component)
-    db.commit()
-    db.refresh(db_component)
-    return db_component
+    try:
+        db_component = Component(
+            merchant_id=merchant_id,
+            **component.model_dump(),
+            available=component.on_hand,
+            reserved=0.0
+        )
+        
+        db.add(db_component)
+        db.commit()
+        db.refresh(db_component)
+        return db_component
+    except Exception as e:
+        db.rollback()
+        import traceback
+        print(f"Error creating component: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{component_id}", response_model=ComponentResponse)
 def get_component(component_id: int, db: Session = Depends(get_db)):
@@ -97,16 +104,23 @@ def update_component(
     if not db_component:
         raise HTTPException(status_code=404, detail="Component not found")
     
-    update_data = component_update.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(db_component, field, value)
-    
-    # Recalculate available
-    db_component.available = db_component.on_hand - db_component.reserved
-    
-    db.commit()
-    db.refresh(db_component)
-    return db_component
+    try:
+        update_data = component_update.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_component, field, value)
+        
+        # Recalculate available
+        db_component.available = db_component.on_hand - db_component.reserved
+        
+        db.commit()
+        db.refresh(db_component)
+        return db_component
+    except Exception as e:
+        db.rollback()
+        import traceback
+        print(f"Error updating component: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/{component_id}/adjust-stock", response_model=ComponentResponse)
 def adjust_stock(
@@ -173,3 +187,22 @@ def get_component_impact(component_id: int, db: Session = Depends(get_db)):
         "is_low_stock": component.available <= component.threshold,
         "affected_products": []  # Will be populated later
     }
+
+@router.delete("/{component_id}")
+def delete_component(component_id: int, db: Session = Depends(get_db)):
+    """Soft delete a component"""
+    merchant_id = get_current_merchant()
+    
+    db_component = db.query(Component).filter(
+        Component.id == component_id,
+        Component.merchant_id == merchant_id
+    ).first()
+    
+    if not db_component:
+        raise HTTPException(status_code=404, detail="Component not found")
+    
+    # Soft delete
+    db_component.is_active = False
+    db.commit()
+    
+    return {"status": "success", "message": "Component deleted successfully"}

@@ -10,6 +10,7 @@ from app.routes import boms
 from app.routes import settings as settings_routes
 from app.routes import csv
 from app.routes import risk
+from app.routes import webhooks
 
 # Logging setup
 logging.basicConfig(
@@ -45,6 +46,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "https://*.shopify.com",
         "https://*.myshopify.com",
         settings.SHOPIFY_APP_URL.rstrip("/") if settings.SHOPIFY_APP_URL else "",
@@ -62,6 +65,7 @@ app.include_router(alerts.router)
 app.include_router(settings_routes.router)
 app.include_router(csv.router)
 app.include_router(risk.router)
+app.include_router(webhooks.router)
 
 # Root endpoint
 @app.get("/")

@@ -1,5 +1,5 @@
 // src/lib/bom-api.ts
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+const API_URL = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000').replace('localhost', '127.0.0.1');
 
 export interface BOMLine {
   component_id: number;

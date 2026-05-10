@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import "@shopify/polaris/build/esm/styles.css";
+import "./globals.css";
 import { Providers } from "./providers";
 
 const geistSans = Geist({
@@ -30,6 +30,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD,opsz@100..700,0..1,-50..200,20..48&display=swap" rel="stylesheet" />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

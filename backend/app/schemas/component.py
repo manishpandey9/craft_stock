@@ -20,6 +20,7 @@ class ComponentBase(BaseModel):
     supplier: Optional[str] = Field(None, max_length=255)
     lead_time_days: Optional[int] = Field(None, ge=0)
     notes: Optional[str] = None
+    cost_per_unit: float = Field(default=0.0, ge=0)
 
 class ComponentCreate(ComponentBase):
     on_hand: float = Field(default=0.0, ge=0)
@@ -35,6 +36,7 @@ class ComponentUpdate(BaseModel):
     supplier: Optional[str] = Field(None, max_length=255)
     lead_time_days: Optional[int] = Field(None, ge=0)
     notes: Optional[str] = None
+    cost_per_unit: Optional[float] = Field(None, ge=0)
     is_active: Optional[bool] = None
 
 class ComponentResponse(ComponentBase):
